@@ -1,7 +1,8 @@
 <template>
     <div id="">
         <div v-if="isPhoneFlag" style="position: relative;background: #CCCCCC;" :style="{'min-height':heightBrower+'px'}">
-            <div class="navbar-fixed-top navbar-zdy" v-if="!isWeixinFlag"> //设置导航条组件固定在顶部
+            <!-- 设置导航条组件固定在顶部 -->
+            <div class="navbar-fixed-top navbar-zdy" v-if="!isWeixinFlag">
                 <div class="container">
                     <!--logo-->
                     <div style="margin-top: 15px; float: left;"><img class="logo-app" src="http://www.ecebs.eu/static/img/logo.a90001e.png" /></div>

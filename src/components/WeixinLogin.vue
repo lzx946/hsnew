@@ -38,7 +38,9 @@
                     <p v-cloak v-if="businessErrorNull" style="margin-top: -10px;font-size: 10px;color: red;"> * 请输入您的经营职业</p>
                 </transition>
 
-                <a class="btn btn-lg btn-info" style="width: 100%;margin-top: 1em;border-radius: 0;background: rgb(16,72,131);border: none;" v-on:click="register()"><span>提交</span></a>
+                <div @click="toRegister">
+                    <a class="btn btn-lg btn-info" style="width: 100%;margin-top: 1em;border-radius: 0;background: rgb(16,72,131);border: none;display:inline-block"><span>提交</span></a>
+                </div>
             </form>
         </div>
     </div>
@@ -57,6 +59,9 @@
 
                 phone: "",
                 phoneErrorNull: false,
+
+                phoneErrorIsExist: false,
+                phoneErrorFormat: false,
 
                 business: "",
                 businessErrorNull: false,
@@ -105,43 +110,35 @@
                 }
                 if(index == 5) {
                     this.phoneErrorNull = false;
+                    this.phoneErrorFormat = false;
                     return;
                 }
                 if(index == 8) {
                     this.businessErrorNull = false;
                     return;
                 }
-
+                
             },
-            inputLoseBlur: function(index) {
+            inputLoseBlur: function() {
                 var _self = this;
-                /*账户*/
-                if(index == 1) {
-                    if(this.username == null || this.username.trim().length == 0) {
-                        this.nameErrorNull = true;
-                        return;
-                    }
+                //账户
+                if(this.username == null || this.username.trim().length == 0) {
+                    this.nameErrorNull = true;
                 }
-                /*手机*/
-                else if(index == 5) {
-                    /*是否为空*/
-                    if(this.phone == null || this.phone.trim().length == 0) {
-                        this.phoneErrorNull = true;
-                        return;
-                    }
-                } else if(index == 8) {
-                    /*是否为空*/
-                    if(this.business == null || this.business.trim().length == 0) {
-                        this.businessErrorNull = true;
-                        return;
-                    }
+                //手机号
+                if(this.phone == null || this.phone.trim().length == 0) {
+                    this.phoneErrorNull = true;
+                } else if(!(/^1[34578]\d{9}$/.test(this.phone))) {
+                    this.phoneErrorFormat = true;
+                }
+                //职业
+                if(this.business == null || this.business.trim().length == 0) {
+                    this.businessErrorNull = true;
                 }
             },
-            register: function() {
-                this.inputLoseBlur(1);
-                this.inputLoseBlur(5);
-                this.inputLoseBlur(8);
-                if(this.nameErrorNull || this.phoneErrorNull || this.businessErrorNull) {
+            toRegister: function() {
+                this.inputLoseBlur();
+                if(this.nameErrorNull || this.phoneErrorNull || this.businessErrorNull || this.phoneErrorFormat) {
                     return;
                 }
                 var _self = this;

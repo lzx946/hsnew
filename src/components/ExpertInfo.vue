@@ -31,9 +31,21 @@
 					</div>-->
                     <span>课程管理</span>
                 </div>
+                <div class="tsama-info-left-menu" v-on:click="getInfo(2)" :class="{'tsama-info-left-menu-active':active==2}">
+                    <!--<div style="clear:left;float: left;margin-left: 3.5em;">
+						<icon :scale="2.2" name="courseIcon"></icon>
+					</div>-->
+                    <span>课程跟踪</span>
+                </div>
+                <div class="tsama-info-left-menu" v-on:click="getInfo(3)" :class="{'tsama-info-left-menu-active':active==3}">
+                    <!--<div style="clear:left;float: left;margin-left: 3.5em;">
+						<icon :scale="2.2" name="courseIcon"></icon>
+					</div>-->
+                    <span>行程跟踪</span>
+                </div>
             </div>
             <!-- right content -->
-            <div style="background: #ECECEC;width: 100%;height: 100%;margin-left: 12em;min-height: 1280px;padding: 0.1em 1em; padding-bottom: 20em;">
+            <div style="background: #ECECEC;height: 100%;margin-left: 12em;min-height: 1280px;padding: 0.1em 1em; padding-bottom: 20em;">
                 <div v-if="active==0" v-cloak>
                     <h3>个人信息</h3>
                     <div style="margin-top: 50px;">
@@ -235,11 +247,22 @@
                         </div>
                     </div>
                     <a v-if="!isShowTimeLocalFlag" style="margin-left: 115px;line-height: 35px;cursor: pointer;" v-on:click="addTimeAndLocal()">添加</a>
-                </div>
                 <button class="btn btn-primary" @click="submitCourse()">提交课程信息</button>
+                </div>
+                <div v-if="active==2" v-cloak>
+                    <!-- 课程跟踪列表 -->
+                    <courselist :meId="meId" v-if="!kcTrack" :userInfo="userInfo" @getKcTrackDetail="getKcTrackDetail"></courselist>
+                    <!-- 课程跟踪详情 -->
+                    <coursedeatil :trackDetail="trackDetail" v-else></coursedeatil>                 
+                </div>
+                <div v-if="active==3" v-cloak>         
+                    <!-- 行程跟踪列表 -->
+                     <TripList :meId="meId" v-if="!TripTrack" :userInfo="userInfo" @getTripListTrackDetail="getTripListTrackDetail"></TripList>
+                     <!-- 行程跟踪详情 -->
+                     <tripdetail v-else :TripDetail="TripDetail"></tripdetail>
+                </div>
             </div>
         </div>
-    </div>
     </div>
 </template>
 
@@ -249,10 +272,24 @@
     import { common } from '@/util/common.js'
     import 'babel-polyfill';
     import myDatepicker from 'vue-datepicker-simple/datepicker-2.vue';
+    import courselist from './following/CourseList.vue';
+    import TripList from './following/TripList.vue';
+    import coursedeatil from './following/CourseDetail.vue';
+    import courseprogress from './following/CourseProgress.vue';
+    import tripdetail from './following/TripDetail.vue';
+    
     export default {
         name: 'ExpertInfo',
         components: {
-            'date-picker': myDatepicker
+
+            'date-picker': myDatepicker,
+            
+            courselist,
+            coursedeatil,
+            courseprogress,
+            tripdetail,
+            TripList,
+            userInfo: {}
         },
         data() {
             return {
@@ -322,6 +359,11 @@
                 phone: "",
                 classroom: [],
                 logoImgSrc: logoImgSrc,
+                meId: '',
+                kcTrack: '',
+                TripTrack: '',
+                trackDetail: {},
+                TripDetail: {}
             }
         },
         mounted() {
@@ -329,11 +371,13 @@
         },
         created() {
             $('#mydatepicker').html("kajdsflasdf");
-            console.log($('#mydatepicker'))
             common.isLogin();
-            if(common.token == null) {
+            this.meId = common.token.id;
+            this.userInfo = common.token; // 从公共方法读取用户登录信息
+            if(common.token == null) {//如果没有，则跳转到登录页面
                 this.$router.push('/login')
             } else {
+                //登录了，则调用接口
                 var _self = this;
                 this.showLoading();
                 $.ajax({
@@ -399,6 +443,47 @@
             }
         },
         methods: {
+            //课程跟踪详情
+            getKcTrackDetail(id) {
+                var _self = this;
+                _self.showLoading();
+                $.ajax({
+                    url: config.IP + "/course/courseTrackingDetail",
+                    type: "post",
+                    contentType:'application/json',
+                    data: JSON.stringify({
+                       courseId: id
+                    }),
+                    success: function(data) {
+                        _self.trackDetail = data.data;
+                        _self.kcTrack = true;
+                        _self.hideLoading();
+                    },
+                    error: function(data, message) {
+                        _self.hideLoading();
+                    }
+                })
+            },
+            //行程跟踪详情
+            getTripListTrackDetail(id) {
+                var _self  = this;
+                $.ajax({
+                    url: config.IP + "/trip/tripTrackingDetail",
+                    type: "post",
+                    contentType:'application/json',
+                    data: JSON.stringify({
+                       tripId: id
+                    }),
+                    success: function(data) {
+                        _self.TripDetail = data.data;
+                        _self.TripTrack = true;
+                        _self.hideLoading();
+                    },
+                    error: function(data, message) {
+                        _self.hideLoading();
+                    }
+                })
+            },
             updateImg: function() {
                 var _self = this;
                 this.showLoading();
@@ -632,12 +717,22 @@
             },
             getInfo: function(index) {
                 //获取个人信息
-                if(index == 0) {
-                    this.active = 0;
-                }
-                if(index == 1) {
-                    this.active = 1;
-                }
+                this.active =index
+                this.kcTrack = '';
+                this.TripTrack = '';
+                window.scrollTo(0, 0);
+                // if(index == 0) {
+                //     this.active = 0;
+                // }
+                // if(index == 1) {
+                //     this.active = 1;
+                // }
+                //  if(index == 2) {
+                //     this.active = 2;
+                // }
+                // if(index == 3) {
+                //     this.active = 3;
+                // }
             },
             //          fixEmailClick: function () {
             //              this.isShowFixEmailFlag = !this.isShowFixEmailFlag;

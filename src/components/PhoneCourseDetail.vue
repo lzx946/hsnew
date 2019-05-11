@@ -153,7 +153,7 @@
                             } else if(data.flag == -2) {
                                 alert("您已经报名此课程!");
                             } else {
-                                alert("报名失败");
+                                alert("报名失败!");
                             }
 
                             _self.hideLoading();

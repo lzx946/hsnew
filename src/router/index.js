@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import App from '@/App'
+import { common } from '@/util/common.js'
 import Home from '@/components/Home'
 import Expert from '@/components/Expert'
 import Course from '@/components/Course'
@@ -36,6 +37,7 @@ import WeixinPhoneNews from '@/components/WeixinPhoneNews'
 import WeixinPhoneNewsDetail from '@/components/WeixinPhoneNewsDetail'
 import WeixinPhoneBlank from '@/components/WeixinPhoneBlank'
 import WeixinPhoneConUs from '@/components/WeixinPhoneConUs'
+import CurriculumList from '@/components/curriculumList'
 Vue.use(Router)
 
 export default new Router({
@@ -204,6 +206,21 @@ export default new Router({
             path: '/weixinphone/conus',
             name: 'WeixinPhoneConUs',
             component: WeixinPhoneConUs
+        },
+        {
+            //我已报名的课程
+            path: '/weixinphone/curriculumList',
+            name: 'curriculumList',
+            component: CurriculumList,
+            //进入页面前判断是否已经登录，如果没登录则跳转至登录页面
+            beforeEnter: (to, from, next) => {
+                common.isLogin();
+                if(common.token && common.token.id) {
+                    next()
+                }else {
+                    window.location.href = '/phone/login';
+                }
+            }
         }
         
     ]

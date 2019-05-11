@@ -26,18 +26,18 @@
             </div>
         </div>-->
         <!--====遮罩层、微信公众号===-->
-         <div  class="modal fade bs-example-modal-lg" v-bind:class="showCourseLocalCss" >
+         <!-- <div  class="modal fade bs-example-modal-lg" v-bind:class="showCourseLocalCss" >
             <div style="width: 300px;height: 240px;background: white;position: absolute;top: 50%;left: 50%;margin-left: -150px;margin-top: -100px;padding: 1em;">
                 <div id="" style="text-align: center;">
                     <span style="font-size: 1.2em;"><b>请微信关注以下公众号参与报名</b></span>
-                    <img src="http://www.ecebs.eu/static/img/gzcode.png" style="width: 150px;height: 150px;"/>
+                    <img src="http://13.59.102.146/group1/M00/00/01/rB8pIFzITEqAE9pUAACXzfXsxAI105.jpg"  style="width: 150px;height: 150px;"/>  <!--http://www.ecebs.eu/static/img/gzcode.png
 
                     <div id="" @click="hideCourseLocal()" style="text-align: center;background: #19568a;height: 35px;width: 80%;position: absolute;left:10%;bottom: 1em;cursor: pointer;">
                         <span style="color: white;font-size: 1.2em;line-height: 35px;" >关闭</span>
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
         <div class="container" style="padding-top: 100px;">
             <!--title-->
             <div style="text-align: center;font-size: 2.5em;font-family: '幼圆';color: white"><span>学院课程</span></div>
@@ -98,6 +98,20 @@
                             <div style="width: 100%;height: 40px;background: rgb(16,72,131);position: relative;">
                                 <div class="enlist-div" v-for="it in item.courses">
                                     <p style="text-align: center;line-height: 40px;color: white;" @click="showBackEnterF(1)">报名{{it.codeflagname}}</p>
+                                    <!-- ====遮罩层、微信公众号=== -->
+                                    <div  class="modal fade bs-example-modal-lg" v-bind:class="showCourseLocalCss" >
+                                        <div style="width: 300px;height: 240px;background: white;position: absolute;top: 50%;left: 50%;margin-left: -150px;margin-top: -100px;padding: 1em;">
+                                            <div id="" style="text-align: center;">
+                                                <span style="font-size: 1.2em;"><b>请微信关注以下公众号参与报名</b></span>
+                                                <div>
+                                                <img :src="it.qrCodeUrl"  style="width: 150px;height: 150px;"/>  <!--http://www.ecebs.eu/static/img/gzcode.png-->
+                                                </div>
+                                                <div id="" @click="hideCourseLocal()" style="text-align: center;background: #19568a;height: 35px;width: 80%;position: absolute;left:10%;bottom: 1em;cursor: pointer;">
+                                                    <span style="color: white;font-size: 1.2em;line-height: 35px;" >关闭</span>
+                                                </div> 
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div id="">
@@ -131,6 +145,19 @@
                             <div style="width: 100%;height: 40px;background: rgb(16,72,131);position: relative;">
                                 <div class="enlist-div" v-for="it in item.courses">
                                     <p style="text-align: center;line-height: 40px;color: white;" @click="showBackEnterF(1)">报名{{it.codeflagname}}</p>
+                                    <!--====遮罩层、微信公众号===-->
+                                    <!-- <div  class="modal fade bs-example-modal-lg" v-bind:class="showCourseLocalCss" >
+                                        <div style="width: 300px;height: 240px;background: white;position: absolute;top: 50%;left: 50%;margin-left: -150px;margin-top: -100px;padding: 1em;">
+                                            <div id="" style="text-align: center;">
+                                                <span style="font-size: 1.2em;"><b>请微信关注以下公众号参与报名，{{it.qrCodeUrl}}</b></span>
+                                                <img :src="it.qrCodeUrl"  style="width: 150px;height: 150px;"/>  
+
+                                                    <div id="" @click="hideCourseLocal()" style="text-align: center;background: #19568a;height: 35px;width: 80%;position: absolute;left:10%;bottom: 1em;cursor: pointer;">
+                                                    <span style="color: white;font-size: 1.2em;line-height: 35px;" >关闭</span>
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    </div> -->
                                 </div>
                             </div>
                             <div id="">
@@ -186,7 +213,7 @@
                     'background':'rgb(70, 51, 50)',
                     'color':'white',
                 },
-                
+        
                 
             }
         },

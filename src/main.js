@@ -4,10 +4,12 @@ import Vue from 'vue'
 import App from './App'
 import '@/assets/css/global.css'
 import router from './router'
+import Message from '@/components/message';//弹窗组件，引入
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
 /* eslint-disable no-new */
+Vue.use(Message)//全局使用弹窗组件
 new Vue({
     el: '#app',
     router,

@@ -1,101 +1,109 @@
 <template>
     <div id="course_list_id" style="background: white;width: 100%;height: 100%;min-height: 1000px;">
-        <!--====遮罩层、加载中===-->
-        <div class="modal fade bs-example-modal-lg" v-bind:class="showLoadingCss" v-on:dblclick="hideLoading()">
-            <div class="spinner">
-                <div class="double-bounce1"></div>
-                <div class="double-bounce2"></div>
+        <div v-if="!isSign">
+            <!--====遮罩层、加载中===-->
+            <div class="modal fade bs-example-modal-lg" v-bind:class="showLoadingCss" v-on:dblclick="hideLoading()">
+                <div class="spinner">
+                    <div class="double-bounce1"></div>
+                    <div class="double-bounce2"></div>
+                </div>
             </div>
-        </div>
-        <a id="f" name="f">&nbsp;</a>
-        <div class="container" style="padding-top: 0px;">
-            <!--title-->
-            <!--course detail-->
-            <div class="course-detail-class border-shadow-set">
-                <div id="course_detail_top_part_id">
-                    <div id="course_detail_top_img_part_id" style="float: left;">
-                        <img :src="courseInfo.url" class="photo-img-size-course" />
-                    </div>
-                    <div id="course_detail_top_right_part_id" class="course-detail-coursename-div-class">
-                        <div id="course_detail_top_right_coursename_part_id" style="height:70px;width: 100%;text-align: center;">
-                            <br />
-                            <p style="margin-left: 5%;font-size: 1.2em;margin-top: -5px;"><b>“ {{courseInfo.name}} ”</b></p><br />
-                            <p style="margin-left: 25%;font-size: 1em;margin-top: -20px;">欧洲华商商学院&nbsp; 第{{period}}期</p>
-                            <div style="text-align: left;margin-top: 10px;" class="text-overtop-ellipsis"><span style="font-size: 1.3em;margin-left: 10px;">{{courseInfo.employer}}<br />&nbsp;&nbsp;<router-link :to="{name:'PhoneExpertDetail', params: { id: courseInfo.teacherid }}">{{courseInfo.realname}}{{courseInfo.academic}}</router-link></span></div>
+            <a id="f" name="f">&nbsp;</a>
+            <div class="container" style="padding-top: 0px;">
+                <!--title-->
+                <!--course detail-->
+                <div class="course-detail-class border-shadow-set">
+                    <div id="course_detail_top_part_id">
+                        <div id="course_detail_top_img_part_id" style="float: left;">
+                            <img :src="courseInfo.url" class="photo-img-size-course" />
                         </div>
-                    </div>
-                    <div id="course_detail_top_right_courseinfo_part_id" style="height: 100%;">
-                        <div style="padding-top: 10px;text-align: left;"><span style="font-size: 1.1em;">开课时间：{{courseInfo.totalbegin}}<br />结束时间：{{courseInfo.totalend}}</span></div>
-                        <div style="margin-top: 10px;text-align: left;"><span style="font-size: 1.2em;border-bottom: 2px solid rgb(16,72,131);">课程地点及具体时间</span></div>
-                        <div id="" style="font-size: 1.2em;margin-top: 10px;">
-                            <div style="width: 100%;height: 100px;padding: 2%;margin-top: 3%;" v-for="item in courseInfo.courses">
-                                <p style=""><b>{{item.codeflagname}}:</b>{{item.room}}</p>
-                                <p style="text-align: left;">{{item.time}}</p>
-                                <!--<div class="enlist-div-class" @click="nowEnter(item.id,item.endtime)">
-                                    <p>报名{{item.codeflagname}}</p>
-                                </div>-->
-                                <div id="" style="width: 100%;height: 5px;margin: 5px;">
-
+                        <div id="course_detail_top_right_part_id" class="course-detail-coursename-div-class">
+                            <div id="course_detail_top_right_coursename_part_id" style="height:70px;width: 100%;text-align: center;">
+                                <br />
+                                <p style="margin-left: 5%;font-size: 1.2em;margin-top: -5px;"><b>“ {{courseInfo.name}} ”</b></p><br />
+                                <p style="margin-left: 25%;font-size: 1em;margin-top: -20px;">欧洲华商商学院&nbsp; 第{{period}}期</p>
+                                <div style="text-align: left;margin-top: 10px;" class="text-overtop-ellipsis"><span style="font-size: 1.3em;margin-left: 10px;">{{courseInfo.employer}}<br />&nbsp;&nbsp;<router-link :to="{name:'PhoneExpertDetail', params: { id: courseInfo.teacherid }}">{{courseInfo.realname}}{{courseInfo.academic}}</router-link></span></div>
+                            </div>
+                        </div>
+                        <div id="course_detail_top_right_courseinfo_part_id" style="height: 100%;">
+                            <div style="padding-top: 10px;text-align: left;"><span style="font-size: 1.1em;">开课时间：{{courseInfo.totalbegin}}<br />结束时间：{{courseInfo.totalend}}</span></div>
+                            <div style="margin-top: 10px;text-align: left;"><span style="font-size: 1.2em;border-bottom: 2px solid rgb(16,72,131);">课程地点及具体时间</span></div>
+                            <div id="" style="font-size: 1.2em;margin-top: 10px;">
+                                <div class="kc-box" v-for="item in courseInfo.courses">
+                                    <div v-if="(isEnroll && item.id == currentId) || !isEnroll">
+                                        <p style=""><b>{{item.codeflagname}}:</b>{{item.room}}</p>
+                                        <p style="text-align: left;">{{item.time}}</p>
+                                        <div v-if="!isEnroll"  class="enlist-div-class" @click="nowEnter(item.id,item.endtime)">
+                                            <p>报名{{item.codeflagname}}</p>
+                                        </div>
+                                        <div class="enlist-div-class-btn" style="width: 100%;text-align:center;margin: 5px;" v-if="isEnroll && status == 0">
+                                            <a href="javascript:;" class="retreat" @click="retreat(item.id)">退报</a>
+                                            <a href="javascript:;" class="sign" @click="sign(item)">签到</a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div id="" style="padding-top: 20px;width: 100%;height: 35px;padding-bottom: 30px;border-right: 4px solid rgb(16,72,131);">
-                    <span style="border-bottom: 2px solid rgb(16,72,131);font-size: 1.2em;">课程内容</span>
-                </div>
-                <div id="course_detail_bottom_part_id" style="border: 4px solid rgb(16,72,131);border-top: none;padding: 1em;padding-top: 0;">
-                    <div id="" style="text-indent: 20px;padding-top: 10px;">
-                        <span v-html="courseInfo.summary"></span>
+                    <div id="" style="padding-top: 20px;width: 100%;height: 35px;padding-bottom: 30px;border-right: 4px solid rgb(16,72,131);">
+                        <span style="border-bottom: 2px solid rgb(16,72,131);font-size: 1.2em;">课程内容</span>
                     </div>
-                </div>
+                    <div id="course_detail_bottom_part_id" style="border: 4px solid rgb(16,72,131);border-top: none;padding: 1em;padding-top: 0;">
+                        <div id="" style="text-indent: 20px;padding-top: 10px;">
+                            <span v-html="courseInfo.summary"></span>
+                        </div>
+                    </div>
 
-                <div id="" style="margin-top: 20px;">
-                    <!--<div class="enlist-div-class" style="width: 200px;float: left;margin-left: 35%;font-size: 1.2em;" @click="shareEnter()">
-                        <p>分享报名</p>
-                    </div>
-                    <div class="enlist-div-class" style="width: 100px;margin-left: 55%;background: transparent;" @click="showBackEnterFlag=!showBackEnterFlag">-->
-                    <!--<span>退报名</span>-->
-                    <!--</div>-->
-                    <!--<div v-if="showBackEnterFlag" style="position: absolute;z-index: 9;left: 28%;background: white;top: 20px;">
-                        <a style="font-size: 0.8em;display: block;cursor: pointer;font-weight: 100;" v-for="it in courseInfo.courses" @click="backEnter(it.id)">退报{{it.codeflagname}}</a>
-                    </div>-->
-                </div>
-            </div>
-            <div class="border-shadow-set" style="height: 200px;margin-top: 20px;padding: 20px;">
-                <div id="">
-                    <span style="font-size: 1.5em;">评论课程</span>
-                    <div>
-                        <textarea style="border: 2px solid rgb(16,72,131); width: 100%;height: 100px;" v-model="commentMd">
-                            {{commentMd}}
-                	    </textarea>
-                    </div>
-                    <div class="enlist-div-class" style="width: 150px;height: 35px;float: right;" @click="submitComment()">
-                        <p>发表评论</p>
+                    <div id="" style="margin-top: 20px;">
+                        <!--<div class="enlist-div-class" style="width: 200px;float: left;margin-left: 35%;font-size: 1.2em;" @click="shareEnter()">
+                            <p>分享报名</p>
+                        </div>
+                        <div class="enlist-div-class" style="width: 100px;margin-left: 55%;background: transparent;" @click="showBackEnterFlag=!showBackEnterFlag">-->
+                        <!--<span>退报名</span>-->
+                        <!--</div>-->
+                        <!--<div v-if="showBackEnterFlag" style="position: absolute;z-index: 9;left: 28%;background: white;top: 20px;">
+                            <a style="font-size: 0.8em;display: block;cursor: pointer;font-weight: 100;" v-for="it in courseInfo.courses" @click="backEnter(it.id)">退报{{it.codeflagname}}</a>
+                        </div>-->
                     </div>
                 </div>
-            </div>
-            <div class="border-shadow-set" style="margin-top: 20px;padding: 20px;margin-bottom: 20px;">
-                <div style="position: relative;">
-                    <span style="font-size: 1.5em;">评论列表</span>
-                    <div style="border: 2px solid rgb(16, 72, 131); padding: 20px;">
-                        <div v-cloak v-for="item in commentInfo">
-                            <div style="float: left;">
-                                <img :src="item.imgUrl" style="height: 60px;border-radius: 50%;width: 60px" />
+                <div class="border-shadow-set" style="height: 200px;margin-top: 20px;padding: 20px;">
+                    <div id="">
+                        <span style="font-size: 1.5em;">评论课程</span>
+                        <div>
+                            <textarea style="border: 2px solid rgb(16,72,131); width: 100%;height: 100px;" v-model="commentMd">
+                                {{commentMd}}
+                            </textarea>
+                        </div>
+                        <div class="enlist-div-class" style="width: 150px;height: 35px;float: right;" @click="submitComment()">
+                            <p>发表评论</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="border-shadow-set" style="margin-top: 20px;padding: 20px;margin-bottom: 20px;">
+                    <div style="position: relative;">
+                        <span style="font-size: 1.5em;">评论列表</span>
+                        <div style="border: 2px solid rgb(16, 72, 131); padding: 20px;">
+                            <div v-cloak v-for="item in commentInfo">
+                                <div style="float: left;">
+                                    <img :src="item.imgUrl" style="height: 60px;border-radius: 50%;width: 60px" />
+                                </div>
+                                <div style="margin-left: 80px;">
+                                    <span style="font-size: 1.1em;color: #9a9a9a;"><b>{{item.commentName}}</b></span>
+                                    <p style="margin-top: 20px;text-indent: 2em;">{{item.content}}</p>
+                                    <p style="color: #9a9a9a;font-size: 0.9em;margin-top: 20px;">{{item.createTimeStr.split(" ")[0]}}</p>
+                                </div>
+                                <div class="tsama-line"></div>
                             </div>
-                            <div style="margin-left: 80px;">
-                                <span style="font-size: 1.1em;color: #9a9a9a;"><b>{{item.commentName}}</b></span>
-                                <p style="margin-top: 20px;text-indent: 2em;">{{item.content}}</p>
-                                <p style="color: #9a9a9a;font-size: 0.9em;margin-top: 20px;">{{item.createTimeStr.split(" ")[0]}}</p>
-                            </div>
-                            <div class="tsama-line"></div>
                         </div>
                     </div>
                 </div>
             </div>
+            <div id="" style="height: 50px;width: 100%;">
+                &nbsp;
+            </div>
         </div>
-        <div id="" style="height: 50px;width: 100%;">
-            &nbsp;
+        <div v-else>
+           <Weixin-Sign :signMsg="signMsg"></Weixin-Sign>
         </div>
     </div>
 </template>
@@ -106,6 +114,7 @@
     import LogoBackImgSrc from '@/assets/logo400x400.png'
     import { config } from '@/util/config.js'
     import { common } from '@/util/common.js'
+    import WeixinSign from './WeixinSign'
     export default {
         name: 'WxCourseDetail',
         data() {
@@ -124,9 +133,22 @@
                 commentMd: "",
                 period: 0,
                 wordNum: 300,
+                isEnroll: false,
+                currentId: this.$route.params.id,
+                status: this.$route.query.status,
+                isSign: false,
+                signMsg: {}
             }
         },
+        components: {
+            WeixinSign
+        },
         methods: {
+            sign: function(msg) {
+               this.signMsg = msg;
+               this.signMsg.kcName = this.courseInfo.name;
+               this.isSign = true;
+            },
             shareEnter: function() {
                 alert("暂未开放！")
             },
@@ -148,11 +170,22 @@
                         success: function(data) {
                             data = JSON.parse(data);
                             if(data.flag == 1) {
-                                alert("报名成功");
+                                _self.$message.alert({
+                                    html:'报名成功!',
+                                    callback: function() {
+                                        _self.$router.push({
+                                            path: '/weixinphone/curriculumList'
+                                        });
+                                    }
+                                });
                             } else if(data.flag == -2) {
-                                alert("您已经报名此课程!");
+                                _self.$message.alert({
+                                    html:'您已经报名此课程!'
+                                });
                             } else {
-                                alert("报名失败");
+                                _self.$message.alert({
+                                    html:'报名失败!'
+                                });
                             }
 
                             _self.hideLoading();
@@ -163,7 +196,7 @@
                         }
                     })
                 } else {
-                    this.$router.push("/phone/login")
+                    this.$router.push("/weixinphone/login")
                 }
             },
             /**
@@ -286,9 +319,51 @@
             showLoading: function() {
                 this.showLoadingCss.in = true;
                 this.showLoadingCss.showloading = true;
-            }
+            },
+            //退报
+            retreat: function(id) {
+                var _self = this;
+                _self.$message.alert({
+                    html:'是否确认退报此课？',
+                    callback: function() {
+                        $.ajax({
+                            url: config.IP + "/enlist/backEnlist",
+                            type: "post",
+                            data: {
+                                uid: common.token.id,
+                                cid: id
+                            },
+                            success: function(response) {
+                                let res = JSON.parse(response);
+                                if(res.flag == 1) {
+                                     _self.$message.alert({
+                                        html:'退报成功!',
+                                        callback: function() {
+                                            _self.$router.push({
+                                                path: '/weixinphone/curriculumList'
+                                            });
+                                        }
+                                    });
+                                }else {
+                                    _self.$message.alert({
+                                        html: res.message || '退报失败!'
+                                    });
+                                }
+                            },
+                            error: function(data, message) {
+                               _self.$message.alert({
+                                    html: '退报失败!'
+                                });
+                            }
+                        })
+                    },
+                    showCancelButton: true
+                });
+            },
         },
         created() {
+            //是否是已报名的课程
+            this.isEnroll = this.$route.query.enroll == '1';
             this.getMainData();
             common.isLogin();
         }
@@ -317,7 +392,19 @@
         text-align: center;
         cursor: pointer;
     }
-    
+    .enlist-div-class-btn a {
+        background: rgb(16, 72, 131);
+        height: 30px;
+        width: 80px;
+        color: white;
+        line-height: 30px;
+        text-align: center;
+        cursor: pointer;
+        display: inline-block;
+    }
+    .enlist-div-class-btn a.retreat {
+        margin-right: 10px;
+    }
     .enlist-div-class p {
         position: relative;
         transition: 0.5s;
@@ -382,5 +469,9 @@
     .border-shadow-set {
         border-radius: 0;
         box-shadow: 0px 0px 10px dimgray;
+    }
+    .kc-box {
+        margin-bottom: 10px;
+        padding: 5px;
     }
 </style>
